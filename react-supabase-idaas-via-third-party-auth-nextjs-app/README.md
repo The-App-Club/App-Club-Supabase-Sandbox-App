@@ -1,0 +1,3 @@
+- Reference
+  - [auth-github](https://supabase.com/docs/guides/auth/auth-github)
+  - [auth-google](https://supabase.com/docs/guides/auth/auth-google)
