@@ -7,13 +7,14 @@ import {Auth, ThemeSupa} from '@supabase/auth-ui-react';
 import type {NextPage} from 'next';
 import Link from 'next/link';
 import {useEffect, useState} from 'react';
-import {Database} from '../db_types';
+import {Database} from '@/config/db_types';
+import {useRouter} from 'next/router';
 
 const LoginPage: NextPage = () => {
   const {isLoading, session, error} = useSessionContext();
   const user = useUser();
   const supabaseClient = useSupabaseClient<Database>();
-
+  const router = useRouter();
   const [data, setData] = useState(null);
 
   useEffect(() => {
@@ -34,14 +35,17 @@ const LoginPage: NextPage = () => {
           onClick={() => {
             supabaseClient.auth.signInWithOAuth({
               provider: 'github',
-              options: {scopes: 'repo', redirectTo: 'http://localhost:3000'},
+              options: {
+                scopes: 'repo',
+                redirectTo: `${process.env.NEXT_PUBLIC_APP_BASE_URL}`,
+              },
             });
           }}
         >
           Login with github
         </button>
         <Auth
-          redirectTo="http://localhost:3000"
+          redirectTo={`${process.env.NEXT_PUBLIC_APP_BASE_URL}`}
           appearance={{theme: ThemeSupa}}
           // view="update_password"
           supabaseClient={supabaseClient}

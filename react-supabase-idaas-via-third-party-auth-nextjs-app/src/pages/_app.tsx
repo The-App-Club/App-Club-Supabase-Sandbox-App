@@ -6,8 +6,12 @@ import {
 import {SessionContextProvider} from '@supabase/auth-helpers-react';
 import type {AppProps} from 'next/app';
 import {useState} from 'react';
-import {Database} from '../db_types';
-import '../styles/globals.css';
+import {Database} from '@/config/db_types';
+import {customTheme} from '@/config/theme';
+import {CssVarsProvider} from '@mui/joy';
+import '@/styles/index.css';
+import '@/styles/index.scss';
+import Header from '@/components/Header';
 
 function MyApp({Component, pageProps}: AppProps<{initialSession: Session}>) {
   const router = useRouter();
@@ -18,18 +22,12 @@ function MyApp({Component, pageProps}: AppProps<{initialSession: Session}>) {
   return (
     <SessionContextProvider
       supabaseClient={supabaseClient}
-      initialSession={pageProps.initialSession}
+      // initialSession={pageProps.initialSession}
     >
-      <button
-        onClick={async () => {
-          await supabaseClient.auth.signOut();
-          router.push('/');
-        }}
-      >
-        Logout
-      </button>
-
-      <Component {...pageProps} />
+      <Header />
+      <CssVarsProvider theme={customTheme}>
+        <Component {...pageProps} />
+      </CssVarsProvider>
     </SessionContextProvider>
   );
 }
