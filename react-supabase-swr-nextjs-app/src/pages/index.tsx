@@ -1,50 +1,53 @@
 import type {NextPage} from 'next';
-import {useSupabase} from '@/contexts/SupabaseContext';
-import useSWR, {SWRResponse} from 'swr';
-import {Button, TextField} from '@mui/joy';
+import {Button, Divider, TextField} from '@mui/joy';
 import {useForm} from 'react-hook-form';
-
-type Test = {
-  id: string;
-  name: string;
-  created_at: Date;
-};
+import useTodo from '@/hooks/useTodo';
+import {Test} from '@/domains/Test';
+import {MdModeEdit} from 'react-icons/md';
+import {MdDeleteOutline} from 'react-icons/md';
+import Spacer from '@/components/Spacer';
+import React, {useState} from 'react';
+import UpdateTodoModal from '@/components/UpdateModal';
+import DeleteTodoModal from '@/components/DeleteModal';
+import useModal from '@/hooks/useModal';
 
 const Home: NextPage = () => {
+  const {setActiveModal} = useModal();
+  const [editModalOpen, setEditModalOpen] = useState<boolean>(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState<boolean>(false);
+
   const {
     register,
     handleSubmit,
-    watch,
     formState: {errors},
   } = useForm();
 
-  const {supabaseClient} = useSupabase();
-
-  const {data, error, mutate} = useSWR(`test`, async (url) => {
-    try {
-      const {data, error} = await supabaseClient
-        .from('test')
-        .select()
-        .order('id', {ascending: true});
-      if (error) {
-        return Promise.reject(error);
-      }
-      return data;
-    } catch (error) {
-      return error;
-    }
-  }) as SWRResponse<Test[], Error>;
+  const {data, error, mutate, addTodo} = useTodo();
 
   const onSubmit = async (formData: any) => {
-    const {error} = await supabaseClient.from('test').insert([
-      {
-        name: formData.name,
-      },
-    ]);
-    if (error) {
-      alert('Something went worng...');
-      return;
+    try {
+      await addTodo(formData);
+      mutate();
+    } catch (error) {
+      return Promise.reject(error);
     }
+  };
+
+  const handleEdit = (e: React.MouseEvent, item: Test) => {
+    setEditModalOpen(true);
+    setActiveModal({
+      activeItem: item,
+    });
+  };
+
+  const handleDelete = (e: React.MouseEvent, item: Test) => {
+    setDeleteModalOpen(true);
+    setActiveModal({
+      activeItem: item,
+    });
+  };
+
+  const handleRefresh = (e: React.MouseEvent<HTMLButtonElement>) => {
     mutate();
   };
 
@@ -56,21 +59,67 @@ const Home: NextPage = () => {
     return <p>Loading...</p>;
   }
 
-  console.log(data);
+  const renderContent = ({data}: {data: Test[]}) => {
+    if (data.length === 0) {
+      return <p>No Data</p>;
+    }
 
-  return (
-    <div className="max-w-xl mx-auto w-full">
-      <h1 className="text-3xl font-bold underline">Hello world!</h1>
-      <form onSubmit={handleSubmit(onSubmit)} className={'w-full'}>
-        <TextField {...register('name')} />
-        <Button type="submit">Submit</Button>
-      </form>
-      <ul>
+    return (
+      <ul className="flex flex-col justify-start gap-4">
         {data.map((item, index) => {
-          return <li key={index}>{item.name}</li>;
+          return (
+            <li
+              key={item.id}
+              className={
+                'min-[3rem] p-2 border-2 flex items-center justify-between'
+              }
+            >
+              {item.name}
+              <div className="flex items-center gap-2">
+                <MdModeEdit
+                  size={24}
+                  className={`cursor-pointer`}
+                  onClick={(e) => {
+                    handleEdit(e, item);
+                  }}
+                />
+                <MdDeleteOutline
+                  size={24}
+                  className={`cursor-pointer`}
+                  onClick={(e) => {
+                    handleDelete(e, item);
+                  }}
+                />
+              </div>
+            </li>
+          );
         })}
       </ul>
-    </div>
+    );
+  };
+
+  return (
+    <>
+      <UpdateTodoModal open={editModalOpen} setOpen={setEditModalOpen} />
+      <DeleteTodoModal open={deleteModalOpen} setOpen={setDeleteModalOpen} />
+      <div className="max-w-md mx-auto w-full">
+        <h1 className="text-3xl font-bold underline">Supabase Test</h1>
+        <Spacer />
+        <Button type="button" onClick={handleRefresh}>
+          Refresh
+        </Button>
+        <Spacer />
+        <form onSubmit={handleSubmit(onSubmit)} className={'w-full'}>
+          <TextField {...register('name')} required />
+          <Spacer />
+          <Button type="submit">Submit</Button>
+        </form>
+        <Spacer />
+        <Divider />
+        <Spacer />
+        {renderContent({data})}
+      </div>
+    </>
   );
 };
 
