@@ -31,6 +31,9 @@ const Header = () => {
     if (error) {
       console.log(error);
     }
+    router.push({
+      pathname: '/magic',
+    });
   };
 
   const renderMenu = ({session}: {session: Session | null | undefined}) => {

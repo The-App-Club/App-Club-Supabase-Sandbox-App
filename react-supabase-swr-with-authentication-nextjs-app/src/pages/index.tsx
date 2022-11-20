@@ -17,6 +17,7 @@ import useModal from '@/hooks/useModal';
 import * as yup from 'yup';
 import {useSupabase} from '@/contexts/SupabaseContext';
 import {renderMessage} from '@/components/Message';
+import Layout from '@/layouts/home';
 
 const schema = yup.object({
   name: yup.string().required('必須入力です'),
@@ -80,8 +81,21 @@ const Home: NextPage = () => {
     console.log(`error`, error);
     return <p>something went wrong...</p>;
   }
+
   if (!data) {
-    return <p>Loading...</p>;
+    return (
+      <Layout>
+        <p>Loading...</p>
+      </Layout>
+    );
+  }
+
+  if (!session) {
+    return (
+      <Layout>
+        <p>First sign in.</p>
+      </Layout>
+    );
   }
 
   const renderContent = ({data}: {data: Todo[]}) => {
