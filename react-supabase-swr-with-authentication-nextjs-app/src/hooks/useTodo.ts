@@ -66,13 +66,16 @@ const useTodo = () => {
     }
   };
 
-  const {data, error, mutate} = useSWR(`todos`, async (url) => {
-    try {
-      return await getTodos();
-    } catch (error) {
-      return Promise.reject(error);
+  const {data, error, mutate} = useSWR(
+    [`todos`, session],
+    async (key, session) => {
+      try {
+        return await getTodos();
+      } catch (error) {
+        return Promise.reject(error);
+      }
     }
-  }) as SWRResponse<Todo[], Error>;
+  ) as SWRResponse<Todo[], Error>;
 
   return {
     getTodos,

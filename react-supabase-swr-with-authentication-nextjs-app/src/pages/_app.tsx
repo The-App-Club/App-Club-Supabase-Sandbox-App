@@ -7,10 +7,12 @@ import {CssVarsProvider} from '@mui/joy';
 import {SupabaseProvider} from '@/contexts/SupabaseContext';
 import {ChakraProvider} from '@chakra-ui/react';
 import Header from '@/components/Header';
+import {Toaster} from 'react-hot-toast';
 
 const MyApp = ({Component, pageProps}: AppProps) => {
   return (
     <RecoilRoot>
+      <Toaster position="bottom-left" />
       <SupabaseProvider>
         <CssVarsProvider theme={customTheme}>
           <ChakraProvider>

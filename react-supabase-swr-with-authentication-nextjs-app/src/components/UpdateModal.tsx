@@ -11,6 +11,7 @@ import useModal from '@/hooks/useModal';
 import {useCallback, useEffect, useMemo} from 'react';
 import useTodo from '@/hooks/useTodo';
 import {useForm} from 'react-hook-form';
+import toast from 'react-hot-toast';
 
 type Props = {
   open: boolean;
@@ -43,9 +44,9 @@ const UpdateModal = ({open, setOpen}: Props) => {
         const response = await updateTodo(willPostedData);
         setOpen(false);
         mutate();
-        console.log(response);
-      } catch (error) {
-        console.log(error);
+        toast.success('Successfully deleted!');
+      } catch (error: any) {
+        toast.error('Something went wrong...');
       }
     },
     [updateTodo, activeItem, setOpen, mutate]

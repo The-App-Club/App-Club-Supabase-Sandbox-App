@@ -18,7 +18,7 @@ import {useSupabase} from '@/contexts/SupabaseContext';
 import Link from 'next/link';
 import {useRouter} from 'next/router';
 import {Session} from '@supabase/supabase-js';
-import Image from 'next/image';
+// import Image from 'next/image';
 import {css} from '@emotion/react';
 import {cx} from '@emotion/css';
 const Header = () => {
@@ -31,9 +31,6 @@ const Header = () => {
     if (error) {
       console.log(error);
     }
-    router.push({
-      pathname: '/magic',
-    });
   };
 
   const renderMenu = ({session}: {session: Session | null | undefined}) => {
@@ -50,9 +47,9 @@ const Header = () => {
             <Avatar size={'sm'} name={session.user?.email} />
           </MenuButton>
           <MenuList>
-            <MenuItem onClick={handleLogout}>Logout</MenuItem>
-            <Divider />
-            <MenuItem onClick={handleLogout}>Logout</MenuItem>
+            <MenuItem onClick={() => {}}>Setting</MenuItem>
+            <MenuItem onClick={() => {}}>Topics</MenuItem>
+            <MenuDivider />
             <MenuItem onClick={handleLogout}>Logout</MenuItem>
           </MenuList>
         </Menu>
@@ -120,7 +117,17 @@ const Header = () => {
           </MenuList>
         </Menu>
         <HStack spacing={8} alignItems={'center'}>
-          <Image
+          <picture
+            onClick={(e) => {
+              router.push({
+                pathname: '/',
+              });
+            }}
+          >
+            <source srcSet={`/assets/logo.png`} type={`image/png`} />
+            <img src={'/assets/logo.png'} alt={'logo'} width={60} height={60} />
+          </picture>
+          {/* <Image
             src={`/assets/logo.png`}
             alt={'logo'}
             width={60}
@@ -135,7 +142,7 @@ const Header = () => {
                 pathname: '/',
               });
             }}
-          />
+          /> */}
           <HStack as={'nav'} spacing={4} display={{base: 'none', md: 'flex'}}>
             <Link href={'/magic'}>
               <a

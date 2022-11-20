@@ -9,6 +9,7 @@ import Spacer from '@/components/Spacer';
 import useModal from '@/hooks/useModal';
 import {useCallback, useMemo} from 'react';
 import useTodo from '@/hooks/useTodo';
+import toast from 'react-hot-toast';
 
 type Props = {
   open: boolean;
@@ -49,7 +50,9 @@ const DeleteModal = ({open, setOpen}: Props) => {
         });
         mutate();
         console.log(response);
-      } catch (error) {
+        toast.success('Successfully deleted!');
+      } catch (error: any) {
+        toast.error('Something went wrong...');
         console.log(error);
       }
     },

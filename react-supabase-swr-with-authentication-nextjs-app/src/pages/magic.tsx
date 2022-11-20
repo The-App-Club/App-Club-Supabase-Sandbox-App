@@ -10,6 +10,7 @@ import Spacer from '@/components/Spacer';
 import {renderMessage} from '@/components/Message';
 import {useState} from 'react';
 import {useSupabase} from '@/contexts/SupabaseContext';
+import toast from 'react-hot-toast';
 
 YupPassword(yup);
 const schema = yup.object({
@@ -42,16 +43,15 @@ const Magic: NextPage = () => {
     const {email} = data;
     try {
       setLoading(true);
-      const {user, session, error} = await supabaseClient.auth.signIn(
+      await supabaseClient.auth.signIn(
         {email},
         {
-          redirectTo: 'http://localhost:3000',
+          redirectTo: process.env.NEXT_PUBLIC_HOSTED_BASE_URL,
         }
       );
-      console.log(`user,session,error`, user, session, error);
-      alert('Check your email for the login link!');
+      toast.success('Check your email for the login link!');
     } catch (error: any) {
-      alert(error.error_description || error.message);
+      toast.error(error.error_description || error.message);
     } finally {
       setLoading(false);
     }

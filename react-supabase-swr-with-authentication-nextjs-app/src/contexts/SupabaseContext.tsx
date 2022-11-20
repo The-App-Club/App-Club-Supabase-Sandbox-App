@@ -1,5 +1,6 @@
 import {createContext, useContext, useEffect, useState} from 'react';
 import {createClient, SupabaseClient, Session} from '@supabase/supabase-js';
+import toast from 'react-hot-toast';
 
 enum UserEventType {
   SIGNED_IN = 'SIGNED_IN',
@@ -58,9 +59,11 @@ const SupabaseProvider = ({children}: {children: React.ReactNode}) => {
         switch (event) {
           case UserEventType.SIGNED_IN:
             console.log('SIGNED_IN', session);
+            toast.success('Successfully Login!');
             break;
           case UserEventType.SIGNED_OUT:
             console.log('SIGNED_OUT', session);
+            toast.success('Successfully Logout!');
             break;
           case UserEventType.TOKEN_REFRESHED:
             console.log('TOKEN_REFRESHED', session);
