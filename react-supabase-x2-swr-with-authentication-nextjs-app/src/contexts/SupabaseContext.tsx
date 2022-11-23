@@ -18,8 +18,15 @@ enum UserEventType {
 
 const supabaseClient = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL as string,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string,
+  {
+    realtime: {},
+  }
 );
+
+// https://supabase.com/docs/guides/realtime/quickstart
+// https://github.com/supabase/realtime-js#postgres-cdc
+const channel = supabaseClient.channel('db-changes');
 
 type SupabaseContextType = {
   nice: () => string;
@@ -52,6 +59,20 @@ const SupabaseProvider = ({children}: {children: React.ReactNode}) => {
   const [user, setUser] = useState<User | null>();
   const [session, setSession] = useState<Session | null>();
   const [event, setEvent] = useState<string>();
+
+  useEffect(() => {
+    channel.on(
+      'postgres_changes',
+      {event: '*', schema: 'public'},
+      (payload) => {
+        console.log('All changes in public schema: ', payload);
+      }
+    );
+
+    return () => {
+      channel.unsubscribe();
+    };
+  }, []);
 
   useEffect(() => {
     (async () => {
