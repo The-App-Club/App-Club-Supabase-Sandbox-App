@@ -1,0 +1,2 @@
+- Reference
+  - [auth-magic-link](https://www.supabase.jp/docs/guides/auth/auth-magic-link)
