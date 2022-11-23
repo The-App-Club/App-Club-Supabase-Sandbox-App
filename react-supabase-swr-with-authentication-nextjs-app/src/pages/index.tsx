@@ -18,6 +18,7 @@ import * as yup from 'yup';
 import {useSupabase} from '@/contexts/SupabaseContext';
 import {renderMessage} from '@/components/Message';
 import Layout from '@/layouts/home';
+import {useSubscription} from '@/hooks/useSubscription';
 
 const schema = yup.object({
   name: yup.string().required('必須入力です'),
@@ -33,6 +34,17 @@ const Home: NextPage = () => {
   const {user} = useMemo(() => {
     return {...session};
   }, [session]);
+
+  useSubscription(
+    (a) => {
+      console.log(a);
+    },
+    {
+      event: '*',
+      table: 'todos',
+    }
+  );
+
   const {
     watch,
     register,
